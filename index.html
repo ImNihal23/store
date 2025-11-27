@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THREAD - Minimal Clothing Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            z-index: 1000;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: #000;
+        }
+
+        .cart-icon {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #000;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a 0%, #434343 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 2rem;
+        }
+
+        .hero-content h1 {
+            font-size: 5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: 3px;
+        }
+
+        .hero-content p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #ccc;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: white;
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .btn-dark {
+            background: #000;
+            color: white;
+        }
+
+        .btn-dark:hover {
+            background: #333;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 2rem 4rem;
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .product-card {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            width: 100%;
+            aspect-ratio: 3/4;
+            background: #f5f5f5;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-category {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        /* Product Detail */
+        .product-detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-top: 3rem;
+        }
+
+        .product-detail-image {
+            width: 100%;
+            aspect-ratio: 3/4;
+            background: #f5f5f5;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .product-detail-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-detail-info h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-detail-price {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 1rem 0 2rem;
+        }
+
+        .product-description {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .size-selector {
+            margin: 2rem 0;
+        }
+
+        .size-selector h4 {
+            margin-bottom: 1rem;
+        }
+
+        .size-options {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .size-option {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .size-option:hover, .size-option.selected {
+            border-color: #000;
+            background: #000;
+            color: white;
+        }
+
+        /* Cart */
+        .cart-empty {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .cart-empty h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cart-items {
+            margin-top: 2rem;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 120px 1fr auto;
+            gap: 2rem;
+            padding: 2rem 0;
+            border-bottom: 1px solid #e0e0e0;
+            align-items: center;
+        }
+
+        .cart-item-image {
+            width: 120px;
+            height: 160px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cart-item-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-details {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .cart-item-actions {
+            text-align: right;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            justify-content: flex-end;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quantity-btn:hover {
+            background: #000;
+            color: white;
+            border-color: #000;
+        }
+
+        .remove-btn {
+            color: #999;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9rem;
+        }
+
+        .remove-btn:hover {
+            color: #ff4444;
+        }
+
+        .cart-summary {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+            text-align: right;
+        }
+
+        .cart-total {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 1rem 0 2rem;
+        }
+
+        /* About Page */
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-content h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .about-content p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 2;
+            margin-bottom: 1.5rem;
+        }
+
+        .values {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            padding: 3rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .value-item h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn:hover {
+            color: #000;
+        }
+
+        /* Footer */
+        footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section a {
+            color: #999;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #333;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .product-detail {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-item {
+                grid-template-columns: 80px 1fr;
+                gap: 1rem;
+            }
+
+            .cart-item-image {
+                width: 80px;
+                height: 100px;
+            }
+
+            .cart-item-actions {
+                grid-column: 1 / -1;
+                text-align: left;
+            }
+
+            .quantity-controls {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo" onclick="showPage('home')">THREAD</div>
+            <ul class="nav-links">
+                <li><a onclick="showPage('home')">Home</a></li>
+                <li><a onclick="showPage('shop')">Shop</a></li>
+                <li><a onclick="showPage('about')">About</a></li>
+            </ul>
+            <div class="cart-icon" onclick="showPage('cart')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 2L7 6H21L19 2H9Z"/>
+                    <path d="M7 6L5.45 13.23C5.17 14.5 6.06 15.77 7.35 15.96L17.35 17.42C18.64 17.61 19.85 16.73 20.05 15.44L21 10"/>
+                    <circle cx="9" cy="20" r="1"/>
+                    <circle cx="20" cy="20" r="1"/>
+                </svg>
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Home Page -->
+    <div id="home" class="page active">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>THREAD</h1>
+                <p>Timeless fashion for modern life</p>
+                <button class="btn" onclick="showPage('shop')">Explore Collection</button>
+            </div>
+        </section>
+
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 1rem;">Featured Collection</h2>
+            <div class="product-grid" id="featuredProducts"></div>
+        </div>
+    </div>
+
+    <!-- Shop Page -->
+    <div id="shop" class="page">
+        <div class="container">
+            <h1 style="font-size: 3rem; margin-bottom: 1rem;">Shop All</h1>
+            <p style="color: #666; font-size: 1.2rem;">Discover our complete collection</p>
+            <div class="product-grid" id="shopProducts"></div>
+        </div>
+    </div>
+
+    <!-- Product Detail Page -->
+    <div id="product" class="page">
+        <div class="container">
+            <span class="back-btn" onclick="showPage('shop')">← Back to Shop</span>
+            <div class="product-detail" id="productDetail"></div>
+        </div>
+    </div>
+
+    <!-- Cart Page -->
+    <div id="cart" class="page">
+        <div class="container">
+            <h1 style="font-size: 3rem; margin-bottom: 2rem;">Shopping Cart</h1>
+            <div id="cartContent"></div>
+        </div>
+    </div>
+
+    <!-- About Page -->
+    <div id="about" class="page">
+        <div class="container">
+            <div class="about-content">
+                <h1>About Thread</h1>
+                <p>Founded in 2020, Thread was created with a simple vision: to bring timeless, quality clothing to people who value both style and substance.</p>
+                <p>We believe that great fashion doesn't need to be complicated. Each piece in our collection is carefully designed to be versatile, comfortable, and made to last. We work with sustainable materials and ethical manufacturers to create clothing that you can feel good about wearing.</p>
+                <p>Our minimalist approach means every item serves a purpose in your wardrobe. No trends, no fast fashion—just quality pieces that stand the test of time.</p>
+                
+                <div class="values">
+                    <div class="value-item">
+                        <h3>Quality First</h3>
+                        <p style="color: #666;">Premium materials and expert craftsmanship in every piece.</p>
+                    </div>
+                    <div class="value-item">
+                        <h3>Sustainable</h3>
+                        <p style="color: #666;">Ethical production and eco-friendly practices.</p>
+                    </div>
+                    <div class="value-item">
+                        <h3>Timeless Design</h3>
+                        <p style="color: #666;">Classic pieces that never go out of style.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>THREAD</h3>
+                <p style="color: #999;">Timeless fashion for modern life.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a onclick="showPage('shop')">Shop</a></li>
+                    <li><a onclick="showPage('about')">About</a></li>
+                    <li><a>Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a>Shipping Info</a></li>
+                    <li><a>Returns</a></li>
+                    <li><a>Size Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p style="color: #999;">Email: hello@thread.com</p>
+                <p style="color: #999;">Phone: (555) 123-4567</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Thread. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const products = [
+            { id: 1, name: 'Classic White Tee', price: 45, category: 'Essentials', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&h=700&fit=crop', description: 'Premium cotton t-shirt with a perfect fit. This wardrobe essential is made from 100% organic cotton and features a classic crew neck design.' },
+            { id: 2, name: 'Denim Jacket', price: 129, category: 'Outerwear', image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&h=700&fit=crop', description: 'Timeless denim jacket crafted from premium selvedge denim. Features classic button closure and multiple pockets.' },
+            { id: 3, name: 'Minimal Black Dress', price: 89, category: 'Dresses', image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&h=700&fit=crop', description: 'Elegant black dress perfect for any occasion. Crafted from soft, breathable fabric with a flattering silhouette.' },
+            { id: 4, name: 'Linen Shirt', price: 75, category: 'Shirts', image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&h=700&fit=crop', description: 'Lightweight linen shirt perfect for warm weather. Breathable fabric with a relaxed fit.' },
+            { id: 5, name: 'Wool Sweater', price: 95, category: 'Knitwear', image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500&h=700&fit=crop', description: 'Cozy merino wool sweater with a timeless design. Soft, warm, and perfect for layering.' },
+            { id: 6, name: 'Tailored Trousers', price: 110, category: 'Bottoms', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&h=700&fit=crop', description: 'Perfectly tailored trousers in premium fabric. Classic fit with a modern twist.' },
+            { id: 7, name: 'Leather Jacket', price: 299, category: 'Outerwear', image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&h=700&fit=crop', description: 'Premium leather jacket with timeless styling. Crafted from top-grain leather with attention to detail.' },
+            { id: 8, name: 'Cotton Hoodie', price: 68, category: 'Essentials', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&h=700&fit=crop', description: 'Comfortable cotton hoodie with a modern fit. Perfect for casual days and layering.' }
+        ];
+
+        let cart = [];
+        let currentProduct = null;
+        let selectedSize = 'M';
+
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageName).classList.add('active');
+            window.scrollTo(0, 0);
+
+            if (pageName === 'home') {
+                displayFeaturedProducts();
+            } else if (pageName === 'shop') {
+                displayShopProducts();
+            } else if (pageName === 'cart') {
+                displayCart();
+            }
+        }
+
+        function displayFeaturedProducts() {
+            const container = document.getElementById('featuredProducts');
+            container.innerHTML = products.slice(0, 3).map(product => `
+                <div class="product-card" onclick="viewProduct(${product.id})">
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.name}">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${product.category}</div>
+                        <h3>${product.name}</h3>
+                        <div class="product-price">$${product.price}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayShopProducts() {
+            const container = document.getElementById('shopProducts');
+            container.innerHTML = products.map(product => `
+                <div class="product-card" onclick="viewProduct(${product.id})">
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.name}">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${product.category}</div>
+                        <h3>${product.name}</h3>
+                        <div class="product-price">$${product.price}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewProduct(id) {
+            currentProduct = products.find(p => p.id === id);
+            const container = document.getElementById('productDetail');
+            container.innerHTML = `
+                <div class="product-detail-image">
+                    <img src="${currentProduct.image}" alt="${currentProduct.name}">
+                </div>
+                <div class="product-detail-info">
+                    <div class="product-category">${currentProduct.category}</div>
+                    <h1>${currentProduct.name}</h1>
+                    <div class="product-detail-price">$${currentProduct.price}</div>
+                    <p class="product-description">${currentProduct.description}</p>
+                    
+                    <div class="size-selector">
+                        <h4>Select Size</h4>
+                        <div class="size-options">
+                            <div class="size-option ${selectedSize === 'S' ? 'selected' : ''}" onclick="selectSize('S')">S</div>
+                            <div class="size-option ${selectedSize === 'M' ? 'selected' : ''}" onclick="selectSize('M')">M</div>
+                            <div class="size-option ${selectedSize === 'L' ? 'selected' : ''}" onclick="selectSize('L')">L</div>
+                            <div class="size-option ${selectedSize === 'XL' ? 'selected' : ''}" onclick="selectSize('XL')">XL</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-dark" onclick="addToCart()" style="width: 100%; margin-top: 2rem;">Add to Cart</button>
+                    
+                    <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e0e0e0;">
+                        <h4 style="margin-bottom: 1rem;">Product Details</h4>
+                        <ul style="color: #666; line-height: 2;">
+                            <li>Premium quality materials</li>
+                            <li>Ethically manufactured</li>
+                            <li>Free shipping on orders over $100</li>
+                            <li>30-day return policy</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            showPage('product');
+        }
+
+        function selectSize(size) {
+            selectedSize = size;
+            document.querySelectorAll('.size-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        function addToCart() {
+            const existingItem = cart.find(item => item.id === currentProduct.id && item.size === selectedSize);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ ...currentProduct, size: selectedSize, quantity: 1 });
+            }
+            updateCartCount();
+            alert('Added to cart!');
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        function displayCart() {
+            const container = document.getElementById('cartContent');
+            
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="cart-empty">
+                        <h2>Your cart is empty</h2>
+                        <p style="color: #666; margin-bottom: 2rem;">Start shopping to add items to your cart</p>
+                        <button class="btn btn-dark" onclick="showPage('shop')">Continue Shopping</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const cartItemsHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <div class="cart-item-image">
+                        <img src="${item.image}" alt="${item.name}">
+                    </div>
+                    <div class="cart-item-info">
+                        <h3>${item.name}</h3>
+                        <div class="cart-item-details">Size: ${item.size}</div>
+                        <div class="cart-item-details">$${item.price} each</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
+                            <span style="font-weight: 600; min-width: 30px; text-align: center;">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                        </div>
+                        <div style="font-size: 1.2rem; font-weight: 600; margin: 1rem 0;">$${(item.price * item.quantity).toFixed(2)}</div>
+                        <span class="remove-btn" onclick="removeFromCart(${index})">Remove</span>
+                    </div>
+                </div>
+            `).join('');
+
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+            container.innerHTML = `
+                <div class="cart-items">${cartItemsHTML}</div>
+                <div class="cart-summary">
+                    <h3>Order Summary</h3>
+                    <div class="cart-total">Total: $${total.toFixed(2)}</div>
+                    <button class="btn btn-dark" style="padding: 1rem 3rem;">Proceed to Checkout</button>
+                </div>
+            `;
+        }
+
+        function updateQuantity(index, change) {
+            cart[index].quantity += change;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartCount();
+            displayCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartCount();
+            displayCart();
+        }
+
+        // Initialize
+        displayFeaturedProducts();
+    </script>
+</body>
+</html>
