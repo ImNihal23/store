@@ -1,227 +1,519 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>THREAD - Minimal Clothing Store</title>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6; color: #333;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
 
-        .page { display: none; }
-        .page.active { display: block; }
+      .page {
+        display: none;
+      }
+      .page.active {
+        display: block;
+      }
 
-        header {
-            position: fixed; top: 0; width: 100%;
-            background: white; border-bottom: 1px solid #e0e0e0;
-            z-index: 1000;
-        }
+      header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: white;
+        border-bottom: 1px solid #e0e0e0;
+        z-index: 1000;
+      }
 
-        nav {
-            max-width: 1200px; margin: 0 auto; padding: 1.5rem 2rem;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+      nav {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        .logo { font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; cursor: pointer; }
+      .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        cursor: pointer;
+      }
 
-        .nav-links { display: flex; gap: 2rem; list-style: none; }
-        .nav-links a { text-decoration: none; color: #666; cursor: pointer; transition: 0.3s; }
-        .nav-links a:hover { color: #000; }
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+      .nav-links a {
+        text-decoration: none;
+        color: #666;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .nav-links a:hover {
+        color: #000;
+      }
 
-        .cart-icon { cursor: pointer; position: relative; }
-        .cart-count {
-            position: absolute; top: -8px; right: -8px; background: #000; color: white;
-            border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem;
-        }
+      .cart-icon {
+        cursor: pointer;
+        position: relative;
+      }
+      .cart-count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #000;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+      }
 
-        .hero {
-            height: 100vh; display: flex; align-items: center; justify-content: center;
-            background: linear-gradient(135deg, #1a1a1a, #434343); text-align: center; color: white;
-        }
+      .hero {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1a1a1a, #434343);
+        text-align: center;
+        color: white;
+      }
 
-        .hero-content h1 { font-size: 5rem; margin-bottom: 1rem; }
-        .hero-content p { font-size: 1.5rem; color: #ccc; margin-bottom: 2rem; }
+      .hero-content h1 {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+      }
+      .hero-content p {
+        font-size: 1.5rem;
+        color: #ccc;
+        margin-bottom: 2rem;
+      }
 
-        .btn {
-            padding: 1rem 2.5rem; border-radius: 50px; border: none;
-            cursor: pointer; background: white; font-weight: 600;
-        }
-        .btn:hover { background: #f0f0f0; }
+      .btn {
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        background: white;
+        font-weight: 600;
+      }
+      .btn:hover {
+        background: #f0f0f0;
+      }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 6rem 2rem 4rem; }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 6rem 2rem 4rem;
+      }
 
-        .product-grid {
-            display: grid; gap: 3rem;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        }
+      .product-grid {
+        display: grid;
+        gap: 3rem;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
 
-        .product-card { cursor: pointer; transition: 0.3s; }
-        .product-card:hover { transform: translateY(-5px); }
+      .product-card {
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .product-card:hover {
+        transform: translateY(-5px);
+      }
 
-        .product-image { width: 100%; aspect-ratio: 3/4; background: #f5f5f5; overflow: hidden; border-radius: 8px; }
-        .product-image img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
-        .product-card:hover img { transform: scale(1.05); }
+      .product-image {
+        width: 100%;
+        aspect-ratio: 3/4;
+        background: #f5f5f5;
+        overflow: hidden;
+        border-radius: 8px;
+      }
+      .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: 0.3s;
+      }
+      .product-card:hover img {
+        transform: scale(1.05);
+      }
 
-        .product-info h3 { font-size: 1.2rem; }
-        .product-category { color: #999; font-size: 0.9rem; }
-        .product-price { font-size: 1.3rem; font-weight: bold; }
+      .product-info h3 {
+        font-size: 1.2rem;
+      }
+      .product-category {
+        color: #999;
+        font-size: 0.9rem;
+      }
+      .product-price {
+        font-size: 1.3rem;
+        font-weight: bold;
+      }
 
-        /* Product Detail */
-        .product-detail {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
-        }
+      /* Product Detail */
+      .product-detail {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+      }
 
-        .product-detail-image { width: 100%; aspect-ratio: 3/4; overflow: hidden; border-radius: 8px; background: #f5f5f5; }
-        .product-detail-image img { width: 100%; height: 100%; object-fit: cover; }
+      .product-detail-image {
+        width: 100%;
+        aspect-ratio: 3/4;
+        overflow: hidden;
+        border-radius: 8px;
+        background: #f5f5f5;
+      }
+      .product-detail-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
 
-        .size-options { display: flex; gap: 1rem; margin-top: 1rem; }
-        .size-option {
-            padding: 0.8rem 1.5rem; border: 2px solid #ddd; border-radius: 5px; cursor: pointer;
-        }
-        .size-option.selected, .size-option:hover {
-            background: #000; color: white; border-color: #000;
-        }
+      .size-options {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .size-option {
+        padding: 0.8rem 1.5rem;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .size-option.selected,
+      .size-option:hover {
+        background: #000;
+        color: white;
+        border-color: #000;
+      }
 
-        /* Cart */
-        .cart-item {
-            display: grid; grid-template-columns: 120px 1fr auto; gap: 2rem;
-            border-bottom: 1px solid #ddd; padding: 1.5rem 0;
-        }
+      /* Cart */
+      .cart-item {
+        display: grid;
+        grid-template-columns: 120px 1fr auto;
+        gap: 2rem;
+        border-bottom: 1px solid #ddd;
+        padding: 1.5rem 0;
+      }
 
-        .cart-item-image img { width: 100%; height: 100%; object-fit: cover; }
+      .cart-item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
 
-        .quantity-controls { display: flex; gap: 1rem; }
-        .quantity-btn {
-            width: 30px; height: 30px; border-radius: 50%;
-            border: 1px solid #aaa; background: white; cursor: pointer;
-        }
+      .quantity-controls {
+        display: flex;
+        gap: 1rem;
+      }
+      .quantity-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid #aaa;
+        background: white;
+        cursor: pointer;
+      }
 
-        .remove-btn { color: red; cursor: pointer; }
+      .remove-btn {
+        color: red;
+        cursor: pointer;
+      }
 
-        footer {
-            background: #1a1a1a; color: white; padding: 3rem 2rem; margin-top: 3rem;
-        }
+      footer {
+        background: #1a1a1a;
+        color: white;
+        padding: 3rem 2rem;
+        margin-top: 3rem;
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
-<!-- Header -->
-<header>
-    <nav>
+  <body>
+    <!-- Header -->
+    <header>
+      <nav>
         <div class="logo" onclick="showPage('home')">THREAD</div>
         <ul class="nav-links">
-            <li><a onclick="showPage('home')">Home</a></li>
-            <li><a onclick="showPage('shop')">Shop</a></li>
-            <li><a onclick="showPage('about')">About</a></li>
+          <li><a onclick="showPage('home')">Home</a></li>
+          <li><a onclick="showPage('shop')">Shop</a></li>
+          <li><a onclick="showPage('about')">About</a></li>
         </ul>
 
         <div class="cart-icon" onclick="showPage('cart')">
-            🛒 <span class="cart-count" id="cartCount">0</span>
+          🛒 <span class="cart-count" id="cartCount">0</span>
         </div>
-    </nav>
-</header>
+      </nav>
+    </header>
 
-<!-- Home -->
-<div id="home" class="page active">
-    <section class="hero">
+    <!-- Home -->
+    <div id="home" class="page active">
+      <section class="hero">
         <div class="hero-content">
-            <h1>THREAD</h1>
-            <p>Timeless fashion for modern life</p>
-            <button class="btn" onclick="showPage('shop')">Explore Collection</button>
+          <h1>THREAD</h1>
+          <p>Timeless fashion for modern life</p>
+          <button class="btn" onclick="showPage('shop')">
+            Explore Collection
+          </button>
         </div>
-    </section>
+      </section>
 
-    <div class="container">
-        <h2 style="text-align:center; font-size:2rem;">Featured Collection</h2>
+      <div class="container">
+        <h2 style="text-align: center; font-size: 2rem">Featured Collection</h2>
         <div class="product-grid" id="featuredProducts"></div>
+      </div>
     </div>
-</div>
 
-<!-- Shop -->
-<div id="shop" class="page">
-    <div class="container">
+    <!-- Shop -->
+    <div id="shop" class="page">
+      <div class="container">
         <h1>Shop All</h1>
         <div class="product-grid" id="shopProducts"></div>
+      </div>
     </div>
-</div>
 
-<!-- Product Detail -->
-<div id="product" class="page">
-    <div class="container">
-        <span onclick="showPage('shop')" style="cursor:pointer;">← Back to Shop</span>
+    <!-- Product Detail -->
+    <div id="product" class="page">
+      <div class="container">
+        <span onclick="showPage('shop')" style="cursor: pointer"
+          >← Back to Shop</span
+        >
         <div id="productDetail" class="product-detail"></div>
+      </div>
     </div>
-</div>
 
-<!-- Cart -->
-<div id="cart" class="page">
-    <div class="container">
+    <!-- Cart -->
+    <div id="cart" class="page">
+      <div class="container">
         <h1>Shopping Cart</h1>
         <div id="cartContent"></div>
+      </div>
     </div>
-</div>
 
-<!-- About -->
-<div id="about" class="page">
-    <div class="container">
+    <!-- About -->
+    <div id="about" class="page">
+      <div class="container">
         <h1>About THREAD</h1>
         <p>Minimal clothing for modern lifestyle.</p>
+
+        <div style="margin-top: 3rem; max-width: 600px">
+          <h2>Contact Us</h2>
+          <form
+            id="contactForm"
+            onsubmit="handleFormSubmit(event)"
+            style="margin-top: 2rem"
+          >
+            <div style="margin-bottom: 1.5rem">
+              <label
+                for="name"
+                style="display: block; margin-bottom: 0.5rem; font-weight: 600"
+                >Name</label
+              >
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                style="
+                  width: 100%;
+                  padding: 0.8rem;
+                  border: 1px solid #ddd;
+                  border-radius: 5px;
+                  font-size: 1rem;
+                "
+              />
+            </div>
+
+            <div style="margin-bottom: 1.5rem">
+              <label
+                for="email"
+                style="display: block; margin-bottom: 0.5rem; font-weight: 600"
+                >Email</label
+              >
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                style="
+                  width: 100%;
+                  padding: 0.8rem;
+                  border: 1px solid #ddd;
+                  border-radius: 5px;
+                  font-size: 1rem;
+                "
+              />
+            </div>
+
+            <div style="margin-bottom: 1.5rem">
+              <label
+                for="message"
+                style="display: block; margin-bottom: 0.5rem; font-weight: 600"
+                >Message</label
+              >
+              <textarea
+                id="message"
+                name="message"
+                rows="5"
+                required
+                style="
+                  width: 100%;
+                  padding: 0.8rem;
+                  border: 1px solid #ddd;
+                  border-radius: 5px;
+                  font-size: 1rem;
+                  font-family: inherit;
+                "
+              ></textarea>
+            </div>
+
+            <button type="submit" class="btn">Send Message</button>
+          </form>
+          <div
+            id="formMessage"
+            style="
+              margin-top: 1rem;
+              padding: 1rem;
+              border-radius: 5px;
+              display: none;
+            "
+          ></div>
+        </div>
+      </div>
     </div>
-</div>
 
-<footer>
-    <div style="text-align:center;">© 2024 THREAD. All Rights Reserved.</div>
-</footer>
+    <footer>
+      <div style="text-align: center">© 2024 THREAD. All Rights Reserved.</div>
+    </footer>
 
-<script>
-/* --- PRODUCT DATA --- */
-const products = [
-    { id: 1, name: "Classic White Tee", price: 45, category: "Essentials", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&h=700&fit=crop", description: "Premium cotton t-shirt with a perfect fit." },
-    { id: 2, name: "Denim Jacket", price: 129, category: "Outerwear", image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&h=700&fit=crop", description: "Timeless selvedge denim jacket." },
-    { id: 3, name: "Minimal Black Dress", price: 89, category: "Dresses", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&h=700&fit=crop", description: "Elegant black dress for any occasion." },
-    { id: 4, name: "Linen Shirt", price: 75, category: "Shirts", image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&h=700&fit=crop", description: "Breathable linen for warm weather." },
-    { id: 5, name: "Wool Sweater", price: 95, category: "Knitwear", image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500&h=700&fit=crop", description: "Cozy merino wool sweater." },
-    { id: 6, name: "Tailored Trousers", price: 110, category: "Bottoms", image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&h=700&fit=crop", description: "Perfectly tailored premium trousers." },
-    { id: 7, name: "Leather Jacket", price: 299, category: "Outerwear", image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&h=700&fit=crop", description: "Top-grain leather jacket." },
-    { id: 8, name: "Cotton Hoodie", price: 68, category: "Essentials", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&h=700&fit=crop", description: "Soft and modern-fit hoodie." }
-];
+    <script>
+      /* --- PRODUCT DATA --- */
+      const products = [
+        {
+          id: 1,
+          name: "Classic White Tee",
+          price: 45,
+          category: "Essentials",
+          image:
+            "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&h=700&fit=crop",
+          description: "Premium cotton t-shirt with a perfect fit.",
+        },
+        {
+          id: 2,
+          name: "Denim Jacket",
+          price: 129,
+          category: "Outerwear",
+          image:
+            "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&h=700&fit=crop",
+          description: "Timeless selvedge denim jacket.",
+        },
+        {
+          id: 3,
+          name: "Minimal Black Dress",
+          price: 89,
+          category: "Dresses",
+          image:
+            "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&h=700&fit=crop",
+          description: "Elegant black dress for any occasion.",
+        },
+        {
+          id: 4,
+          name: "Linen Shirt",
+          price: 75,
+          category: "Shirts",
+          image:
+            "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&h=700&fit=crop",
+          description: "Breathable linen for warm weather.",
+        },
+        {
+          id: 5,
+          name: "Wool Sweater",
+          price: 95,
+          category: "Knitwear",
+          image:
+            "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500&h=700&fit=crop",
+          description: "Cozy merino wool sweater.",
+        },
+        {
+          id: 6,
+          name: "Tailored Trousers",
+          price: 110,
+          category: "Bottoms",
+          image:
+            "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&h=700&fit=crop",
+          description: "Perfectly tailored premium trousers.",
+        },
+        {
+          id: 7,
+          name: "Leather Jacket",
+          price: 299,
+          category: "Outerwear",
+          image:
+            "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&h=700&fit=crop",
+          description: "Top-grain leather jacket.",
+        },
+        {
+          id: 8,
+          name: "Cotton Hoodie",
+          price: 68,
+          category: "Essentials",
+          image:
+            "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&h=700&fit=crop",
+          description: "Soft and modern-fit hoodie.",
+        },
+      ];
 
-let cart = [];
-let selectedSize = "M";
+      let cart = [];
+      let selectedSize = "M";
 
-/* PAGE NAVIGATION */
-function showPage(page) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(page).classList.add('active');
-    window.scrollTo(0, 0);
+      /* PAGE NAVIGATION */
+      function showPage(page) {
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById(page).classList.add("active");
+        window.scrollTo(0, 0);
 
-    if (page === "home") displayFeaturedProducts();
-    if (page === "shop") displayShopProducts();
-    if (page === "cart") displayCart();
-}
+        if (page === "home") displayFeaturedProducts();
+        if (page === "shop") displayShopProducts();
+        if (page === "cart") displayCart();
+      }
 
-/* HOME */
-function displayFeaturedProducts() {
-    document.getElementById("featuredProducts").innerHTML =
-        products.slice(0, 3).map(p => productCard(p)).join('');
-}
+      /* HOME */
+      function displayFeaturedProducts() {
+        document.getElementById("featuredProducts").innerHTML = products
+          .slice(0, 3)
+          .map((p) => productCard(p))
+          .join("");
+      }
 
-/* SHOP */
-function displayShopProducts() {
-    document.getElementById("shopProducts").innerHTML =
-        products.map(p => productCard(p)).join('');
-}
+      /* SHOP */
+      function displayShopProducts() {
+        document.getElementById("shopProducts").innerHTML = products
+          .map((p) => productCard(p))
+          .join("");
+      }
 
-/* PRODUCT CARD */
-function productCard(p) {
-    return `
+      /* PRODUCT CARD */
+      function productCard(p) {
+        return `
         <div class="product-card" onclick="viewProduct(${p.id})">
             <div class="product-image"><img src="${p.image}"></div>
             <div class="product-info">
@@ -231,14 +523,14 @@ function productCard(p) {
             </div>
         </div>
     `;
-}
+      }
 
-/* PRODUCT DETAIL */
-function viewProduct(id) {
-    const p = products.find(pr => pr.id === id);
-    selectedSize = "M";
+      /* PRODUCT DETAIL */
+      function viewProduct(id) {
+        const p = products.find((pr) => pr.id === id);
+        selectedSize = "M";
 
-    document.getElementById("productDetail").innerHTML = `
+        document.getElementById("productDetail").innerHTML = `
         <div class="product-detail-image"><img src="${p.image}"></div>
         <div>
             <h1>${p.name}</h1>
@@ -247,49 +539,61 @@ function viewProduct(id) {
 
             <h4>Select Size:</h4>
             <div class="size-options">
-                ${["S", "M", "L", "XL"].map(size =>
-                    `<div class="size-option ${size === "M" ? "selected" : ""}" onclick="selectSize('${size}', this)">${size}</div>`
-                ).join('')}
+                ${["S", "M", "L", "XL"]
+                  .map(
+                    (size) =>
+                      `<div class="size-option ${
+                        size === "M" ? "selected" : ""
+                      }" onclick="selectSize('${size}', this)">${size}</div>`
+                  )
+                  .join("")}
             </div>
 
-            <button class="btn" style="margin-top:2rem;" onclick="addToCart(${p.id})">Add to Cart</button>
+            <button class="btn" style="margin-top:2rem;" onclick="addToCart(${
+              p.id
+            })">Add to Cart</button>
         </div>
     `;
 
-    showPage("product");
-}
+        showPage("product");
+      }
 
-function selectSize(size, el) {
-    selectedSize = size;
-    document.querySelectorAll(".size-option").forEach(e => e.classList.remove("selected"));
-    el.classList.add("selected");
-}
+      function selectSize(size, el) {
+        selectedSize = size;
+        document
+          .querySelectorAll(".size-option")
+          .forEach((e) => e.classList.remove("selected"));
+        el.classList.add("selected");
+      }
 
-/* CART */
-function addToCart(id) {
-    const item = cart.find(i => i.id === id && i.size === selectedSize);
+      /* CART */
+      function addToCart(id) {
+        const item = cart.find((i) => i.id === id && i.size === selectedSize);
 
-    if (item) item.qty++;
-    else cart.push({ id, size: selectedSize, qty: 1 });
+        if (item) item.qty++;
+        else cart.push({ id, size: selectedSize, qty: 1 });
 
-    updateCartCount();
-    alert("Added to cart!");
-}
+        updateCartCount();
+        alert("Added to cart!");
+      }
 
-function updateCartCount() {
-    document.getElementById("cartCount").innerText =
-        cart.reduce((a, c) => a + c.qty, 0);
-}
+      function updateCartCount() {
+        document.getElementById("cartCount").innerText = cart.reduce(
+          (a, c) => a + c.qty,
+          0
+        );
+      }
 
-function displayCart() {
-    if (cart.length === 0) {
-        document.getElementById("cartContent").innerHTML = "<h2>Your cart is empty</h2>";
-        return;
-    }
+      function displayCart() {
+        if (cart.length === 0) {
+          document.getElementById("cartContent").innerHTML =
+            "<h2>Your cart is empty</h2>";
+          return;
+        }
 
-    document.getElementById("cartContent").innerHTML =
-        cart.map(item => {
-            const p = products.find(pr => pr.id === item.id);
+        document.getElementById("cartContent").innerHTML = cart
+          .map((item) => {
+            const p = products.find((pr) => pr.id === item.id);
 
             return `
                 <div class="cart-item">
@@ -298,40 +602,73 @@ function displayCart() {
                         <h3>${p.name}</h3>
                         <p>Size: ${item.size}</p>
                         <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="changeQty(${p.id}, '${item.size}', -1)">-</button>
+                            <button class="quantity-btn" onclick="changeQty(${
+                              p.id
+                            }, '${item.size}', -1)">-</button>
                             ${item.qty}
-                            <button class="quantity-btn" onclick="changeQty(${p.id}, '${item.size}', 1)">+</button>
+                            <button class="quantity-btn" onclick="changeQty(${
+                              p.id
+                            }, '${item.size}', 1)">+</button>
                         </div>
                     </div>
                     <div>
                         <strong>$${p.price * item.qty}</strong>
-                        <div class="remove-btn" onclick="removeFromCart(${p.id}, '${item.size}')">Remove</div>
+                        <div class="remove-btn" onclick="removeFromCart(${
+                          p.id
+                        }, '${item.size}')">Remove</div>
                     </div>
                 </div>
             `;
-        }).join('');
-}
+          })
+          .join("");
+      }
 
-function changeQty(id, size, change) {
-    const item = cart.find(i => i.id === id && i.size === size);
-    if (!item) return;
+      function changeQty(id, size, change) {
+        const item = cart.find((i) => i.id === id && i.size === size);
+        if (!item) return;
 
-    item.qty += change;
-    if (item.qty <= 0) removeFromCart(id, size);
+        item.qty += change;
+        if (item.qty <= 0) removeFromCart(id, size);
 
-    updateCartCount();
-    displayCart();
-}
+        updateCartCount();
+        displayCart();
+      }
 
-function removeFromCart(id, size) {
-    cart = cart.filter(i => !(i.id === id && i.size === size));
-    updateCartCount();
-    displayCart();
-}
+      function removeFromCart(id, size) {
+        cart = cart.filter((i) => !(i.id === id && i.size === size));
+        updateCartCount();
+        displayCart();
+      }
 
-displayFeaturedProducts();
-displayShopProducts();
-</script>
+      /* FORM SUBMISSION */
+      function handleFormSubmit(event) {
+        event.preventDefault();
 
-</body>
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const message = document.getElementById("message").value;
+
+        // Display success message
+        const formMessage = document.getElementById("formMessage");
+        formMessage.textContent = `Thank you, ${name}! Your message has been sent successfully.`;
+        formMessage.style.background = "#d4edda";
+        formMessage.style.color = "#155724";
+        formMessage.style.display = "block";
+
+        // Reset form
+        document.getElementById("contactForm").reset();
+
+        // Log form data (in a real app, you'd send this to a server)
+        console.log({ name, email, message });
+
+        // Hide message after 5 seconds
+        setTimeout(() => {
+          formMessage.style.display = "none";
+        }, 5000);
+      }
+
+      displayFeaturedProducts();
+      displayShopProducts();
+    </script>
+  </body>
 </html>
