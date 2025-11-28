@@ -110,11 +110,12 @@
         border-radius: 50px;
         border: none;
         cursor: pointer;
-        background: white;
+        background: black;
+        color: white;
         font-weight: 600;
       }
       .btn:hover {
-        background: #f0f0f0;
+        background: #333;
       }
 
       .container {
@@ -227,9 +228,14 @@
         width: 30px;
         height: 30px;
         border-radius: 50%;
-        border: 1px solid #aaa;
-        background: white;
+        border: 1px solid #000;
+        background: #000;
+        color: white;
         cursor: pointer;
+        font-weight: 600;
+      }
+      .quantity-btn:hover {
+        background: #333;
       }
 
       .remove-btn {
@@ -386,16 +392,19 @@
 
             <button type="submit" class="btn">Send Message</button>
           </form>
-          <div
-            id="formMessage"
-            style="
-              margin-top: 1rem;
-              padding: 1rem;
-              border-radius: 5px;
-              display: none;
-            "
-          ></div>
         </div>
+      </div>
+    </div>
+
+    <!-- Thank You Page -->
+    <div id="thankyou" class="page">
+      <div class="container" style="text-align: center; padding-top: 10rem">
+        <h1 style="font-size: 3rem; margin-bottom: 1rem">Thank You!</h1>
+        <p style="font-size: 1.2rem; color: #666; margin-bottom: 2rem">
+          Your message has been sent successfully. We'll get back to you soon.
+        </p>
+        <div id="thankYouInfo" style="margin-bottom: 2rem"></div>
+        <button class="btn" onclick="showPage('home')">Back to Home</button>
       </div>
     </div>
 
@@ -483,18 +492,56 @@
       let cart = [];
       let selectedSize = "M";
 
+      /* URL ROUTING */
+      function updateURL(path) {
+        window.history.pushState({ path }, "", path);
+      }
+
+      function getRouteFromURL() {
+        return window.location.pathname;
+      }
+
       /* PAGE NAVIGATION */
-      function showPage(page) {
+      function showPage(page, productId = null) {
         document
           .querySelectorAll(".page")
           .forEach((p) => p.classList.remove("active"));
         document.getElementById(page).classList.add("active");
         window.scrollTo(0, 0);
 
+        // Update URL based on page
+        if (page === "home") {
+          updateURL("/");
+        } else if (page === "shop") {
+          updateURL("/shop");
+        } else if (page === "product" && productId) {
+          updateURL(`/shop/${productId}`);
+        } else if (page === "about") {
+          updateURL("/about");
+        } else if (page === "thankyou") {
+          updateURL("/thank-you");
+        } else if (page === "cart") {
+          updateURL("/cart");
+        }
+
         if (page === "home") displayFeaturedProducts();
         if (page === "shop") displayShopProducts();
         if (page === "cart") displayCart();
       }
+
+      /* HANDLE BROWSER BACK/FORWARD */
+      window.addEventListener("popstate", function (event) {
+        const path = window.location.pathname;
+
+        if (path === "/") showPage("home");
+        else if (path === "/shop") showPage("shop");
+        else if (path.startsWith("/shop/")) {
+          const productId = parseInt(path.split("/")[2]);
+          viewProduct(productId);
+        } else if (path === "/about") showPage("about");
+        else if (path === "/thank-you") showPage("thankyou");
+        else if (path === "/cart") showPage("cart");
+      });
 
       /* HOME */
       function displayFeaturedProducts() {
@@ -555,7 +602,7 @@
         </div>
     `;
 
-        showPage("product");
+        showPage("product", id);
       }
 
       function selectSize(size, el) {
@@ -648,23 +695,23 @@
         const email = document.getElementById("email").value;
         const message = document.getElementById("message").value;
 
-        // Display success message
-        const formMessage = document.getElementById("formMessage");
-        formMessage.textContent = `Thank you, ${name}! Your message has been sent successfully.`;
-        formMessage.style.background = "#d4edda";
-        formMessage.style.color = "#155724";
-        formMessage.style.display = "block";
+        // Store form data for thank you page
+        const formData = { name, email, message };
+
+        // Log form data (in a real app, you'd send this to a server)
+        console.log(formData);
+
+        // Display thank you information
+        document.getElementById("thankYouInfo").innerHTML = `
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+        `;
 
         // Reset form
         document.getElementById("contactForm").reset();
 
-        // Log form data (in a real app, you'd send this to a server)
-        console.log({ name, email, message });
-
-        // Hide message after 5 seconds
-        setTimeout(() => {
-          formMessage.style.display = "none";
-        }, 5000);
+        // Redirect to thank you page
+        showPage("thankyou");
       }
 
       displayFeaturedProducts();
